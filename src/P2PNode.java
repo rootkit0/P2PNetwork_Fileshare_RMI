@@ -115,10 +115,11 @@ public class P2PNode extends UnicastRemoteObject implements P2PNodeInterface {
     public void isolatedTask(P2PNode node) {
         try {
             Registry registry = startRegistry(clientPort);
+            Thread.sleep(3000);
             registry.bind("node", (P2PNode) this);
             System.out.println("Starting node at port " + clientPort);
             this.fileshareActions(node);
-        } catch (AlreadyBoundException | IOException | NoSuchAlgorithmException e) {
+        } catch (AlreadyBoundException | IOException | NoSuchAlgorithmException | InterruptedException e) {
             e.printStackTrace();
         }
     }
@@ -127,11 +128,12 @@ public class P2PNode extends UnicastRemoteObject implements P2PNodeInterface {
     public void connectedTask(P2PNode node) {
         try {
             Registry registry = LocateRegistry.getRegistry(hostIp, hostPort);
+            Thread.sleep(3000);
             P2PNodeInterface stub = (P2PNodeInterface) registry.lookup("node");
             stub.registerNode(node);
             this.notifyNodes(node);
             System.out.println("Connected to the host with IP: " + hostIp + " and port: " + hostPort);
-        } catch (NotBoundException | RemoteException e) {
+        } catch (NotBoundException | RemoteException | InterruptedException e) {
             e.printStackTrace();
         }
     }
@@ -394,7 +396,7 @@ public class P2PNode extends UnicastRemoteObject implements P2PNodeInterface {
             networkFiles.replace(fileHash, fileInfo);
             //Entire network
             for(P2PNodeInterface node_iter : connectedNodes) {
-                node_iter.editFile(fileHash, fileInfo);
+                //node_iter.editFile(fileHash, fileInfo);
             }
 
             System.out.println("The current content for the file is:");
@@ -437,9 +439,10 @@ public class P2PNode extends UnicastRemoteObject implements P2PNodeInterface {
     public Map<String, FileInformation> listFiles() {
         return this.networkFiles;
     }
-
+/*
     @Override
     public void editFile(String fileHash, FileInformation fileInformation) {
         this.networkFiles.replace(fileHash, fileInformation);
     }
+ */
 }
